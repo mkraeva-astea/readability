@@ -41,6 +41,7 @@ function Readability(uri, doc, options) {
   this._maxElemsToParse = options.maxElemsToParse || this.DEFAULT_MAX_ELEMS_TO_PARSE;
   this._nbTopCandidates = options.nbTopCandidates || this.DEFAULT_N_TOP_CANDIDATES;
   this._maxPages = options.maxPages || this.DEFAULT_MAX_PAGES;
+  this._minArticleLen = options.minArticleLen !== undefined ? options.minArticleLen : this.DEFAULT_MIN_ARTICLE_LEN;
 
   // Start with all flags set
   this._flags = this.FLAG_STRIP_UNLIKELYS |
@@ -106,6 +107,9 @@ Readability.prototype = {
   // The maximum number of pages to loop through before we call
   // it quits and just show a link.
   DEFAULT_MAX_PAGES: 5,
+
+  // The minimum length a content has to have in order to be considered "meaningful"
+  DEFAULT_MIN_ARTICLE_LEN: 500,
 
   // Element tags to score by default.
   DEFAULT_TAGS_TO_SCORE: "section,h2,h3,h4,h5,h6,p,td,pre".toUpperCase().split(","),
@@ -1051,7 +1055,7 @@ Readability.prototype = {
       // grabArticle with different flags set. This gives us a higher likelihood of
       // finding the content, and the sieve approach gives us a higher likelihood of
       // finding the -right- content.
-      if (this._getInnerText(articleContent, true).length < 500) {
+      if (this._getInnerText(articleContent, true).length < this._minArticleLen) {
         page.innerHTML = pageCacheHtml;
 
         if (this._flagIsActive(this.FLAG_STRIP_UNLIKELYS)) {
